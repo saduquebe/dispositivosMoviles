@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/information"
+        android:layout_width="144dp"
+        android:layout_height="36dp"
+        android:gravity="center_horizontal"
+        android:text="@string/info"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteY="16dp" />
+<!--
+    <TableLayout
+        android:id="@+id/play_grid"
+        android:layout_width="321dp"
+        android:layout_height="309dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/information"
+        tools:ignore="MissingConstraints">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            tools:ignore="MissingConstraints,UselessParent">
+
+            <Button
+                android:id="@+id/one"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="#CBCBCB"
+                android:text="@string/_1"
+                android:textSize="70sp" />
+
+            <Button
+                android:id="@+id/two"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="#ffffff"
+                android:text="@string/_2"
+                android:textSize="70sp" />
+
+            <Button
+                android:id="@+id/three"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="#CBCBCB"
+                android:text="@string/_3"
+                android:textSize="70sp" />
+        </TableRow>
+
+        <TableRow
+            android:gravity="center_horizontal"
+            tools:ignore="MissingConstraints,UselessParent">
+
+            <Button
+                android:id="@+id/four"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="#ffffff"
+                android:text="@string/_4"
+                android:textSize="70sp" />
+
+            <Button
+                android:id="@+id/five"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="#CBCBCB"
+                android:text="@string/_5"
+                android:textSize="70sp" />
+
+            <Button
+                android:id="@+id/six"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="#ffffff"
+                android:text="@string/_6"
+                android:textSize="70sp" />
+        </TableRow>
+
+        <TableRow
+            android:gravity="center_horizontal"
+            tools:ignore="MissingConstraints,UselessParent">
+
+            <Button
+                android:id="@+id/seven"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="#CBCBCB"
+                android:text="@string/_7"
+                android:textSize="70sp" />
+
+            <Button
+                android:id="@+id/eight"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="#ffffff"
+                android:text="@string/_8"
+                android:textSize="70sp" />
+
+            <Button
+                android:id="@+id/nine"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="#CBCBCB"
+                android:text="@string/_9"
+                android:textSize="70sp" />
+        </TableRow>
+    </TableLayout>
+-->
+    <co.edu.unal.tictactoe.BoardView
+        android:id="@+id/board"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/information"
+        tools:ignore="MissingConstraints" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="0dp"
+        android:layout_height="29dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="70dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="MissingConstraints">
+
+        <TextView
+            android:id="@+id/tie_match"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Tie:" />
+
+        <TextView
+            android:id="@+id/human_wins"
+            android:layout_width="20dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Human:" />
+
+        <TextView
+            android:id="@+id/android_wins"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/android" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="338dp"
+        android:layout_height="108dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="MissingConstraints">
+
+        <ImageButton
+            android:id="@+id/new_game"
+            android:layout_width="50dp"
+            android:layout_height="100dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/new_game" />
+
+        <ImageButton
+            android:id="@+id/level"
+            android:layout_width="50dp"
+            android:layout_height="100dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/difficulty_level" />
+
+        <ImageButton
+            android:id="@+id/quit_game"
+            android:layout_width="50dp"
+            android:layout_height="100dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/quit_game" />
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

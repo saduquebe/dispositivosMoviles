@@ -1,0 +1,10 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.AndroidTicTacToeTutorial2" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/pdark</item>
+        <item name="colorPrimaryDark">@color/primary</item>
+        <item name="colorAccent">@color/plight</item>
+        <!-- Customize your theme here. -->
+    </style>
+</resources>
