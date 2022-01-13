@@ -8,7 +8,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -76,14 +75,14 @@ public class BoardView extends View {
             int right = cellWidth*(col+1);
             int bottom = cellWidth*(row+1);
             System.out.println("left: "+ left + " top: "+ top+ " right: "+ right+ " bottom: "+ bottom);
-            if (mGame != null && mGame.getBoardOccupant(i) == TicTacToeGame.HUMAN_PLAYER) {
+            if (mGame != null && mGame.getBoardOccupant(i) == TicTacToeGame.PLAYER_1) {
                 canvas.drawBitmap(mHumanBitmap,
                         null, // src
                         new Rect(left, top, right, bottom), // dest
                         null);
 
             }
-            else if (mGame != null && mGame.getBoardOccupant(i) == TicTacToeGame.COMPUTER_PLAYER) {
+            else if (mGame != null && mGame.getBoardOccupant(i) == TicTacToeGame.PLAYER_2) {
                 canvas.drawBitmap(mComputerBitmap,
                         null, // src
                         new Rect(left, top, right, bottom), // dest

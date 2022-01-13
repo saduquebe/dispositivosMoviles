@@ -5,24 +5,27 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.media.MediaPlayer;
-import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.sql.SQLOutput;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,12 +43,23 @@ public class MainActivity extends AppCompatActivity {
     int humanCount = 0;
     int tieCount = 0;
     int androidCount = 0;
+    static boolean myTurn = false;
+    String username = null;
+    String otherPlayer = null;
     private boolean mGameOver;
     private SharedPreferences mPrefs;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if(myTurn){
+            System.out.println("***********\nMI TURNO\n***********");
+        }
+        else{
+            System.out.println("***********\nTURNO DEL OTRO\n***********");
+        }
+        username = getIntent().getStringExtra("username");
+        otherPlayer = getIntent().getStringExtra("otherPlayer");
         super.onCreate(savedInstanceState);
         mPrefs = getSharedPreferences("ttt_prefs", MODE_PRIVATE);
         setContentView(R.layout.activity_main);
@@ -58,8 +72,43 @@ public class MainActivity extends AppCompatActivity {
         mHumanCount = (TextView) findViewById(R.id.human_wins);
         mTieCount = (TextView) findViewById(R.id.tie_match);
         mAndroidCount = (TextView) findViewById(R.id.android_wins);
-        startNewGame();
+        waitPartner();
+        autoUpdate();
     }
+
+    private void waitPartner() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference player = database.getReference("Players").child(username).child("Available");
+        player.addValueEventListener(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String option = snapshot.getValue().toString();
+                        if(option.equals("0")){
+                            if(otherPlayer == null){
+                                DatabaseReference other = database.getReference("Players").child(username).child("otherPlayer");
+                                other.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DataSnapshot> task) {
+                                        otherPlayer = task.getResult().getValue().toString();
+
+                                    }
+                                });
+                            }
+                            startNewGame();
+                        }
+                        if(option.equals("1")){
+                            disableButtons();
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.w("ERROR", "loadPost:onCancelled", error.toException());
+                    }
+                }
+        );
+    }
+
     @SuppressLint("SetTextI18n")
     private void displayScores() {
         mHumanCount.setText("Human: " + humanCount);
@@ -99,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
     }
     private class ButtonOptionsOnClickListener implements View.OnClickListener{
 
+        @SuppressLint("NonConstantResourceId")
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
@@ -174,34 +224,11 @@ public class MainActivity extends AppCompatActivity {
             int col = (int) event.getX() / mBoardView.getBoardCellWidth();
             int row = (int) event.getY() / mBoardView.getBoardCellHeight();
             int pos = row * 3 + col;
-            if (!mGameOver && setMove(TicTacToeGame.HUMAN_PLAYER, pos)){
-                int winner = mGame.checkForWinner();
-                if (winner == 0) {
-                    mInfoTextView.setText("It's Android's turn.");
-                    int move = mGame.getComputerMove();
-                    setMove(TicTacToeGame.COMPUTER_PLAYER, move);
-                    winner = mGame.checkForWinner();
-                }
-                if (winner == 0) {
-                    mInfoTextView.setText("It's your turn.");
-                }
-                else if (winner == 1) {
-                    mInfoTextView.setText("It's a tie!");
-                    tieCount++;
-                    mTieCount.setText("Tie: " + tieCount);
-                    disableButtons();
-                }
-                else if (winner == 2) {
-                    humanCount++;
-                    mHumanCount.setText("Human: "+ humanCount);
-                    mInfoTextView.setText("You won!");
-                    disableButtons();
-                }
-                else{
-                    androidCount++;
-                    mAndroidCount.setText("Android: "+ androidCount);
-                    mInfoTextView.setText("Android won!");
-                    disableButtons();
+            if (!mGameOver){
+                if(myTurn){
+                    setMove(TicTacToeGame.PLAYER_1, pos);
+                    validateWinner();
+                    mGameOver = true;
                 }
             }
 
@@ -209,20 +236,84 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private void autoUpdate() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference player = database.getReference("Players").child(username).child("move");
+        player.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!snapshot.getValue().toString().contains("waiting")) {
+                    System.out.println("SNAPSHOT: "+ snapshot.getValue());
+                    int move = Integer.parseInt(snapshot.getValue().toString());
+                    if(myTurn){
+                        System.out.println("***********\nMOVI YO\n***********");
+                        setMove(TicTacToeGame.PLAYER_1, move);
+                        myTurn = false;
+                    }
+                    else{
+                        System.out.println("***********\nMOVIO EL OTRO\n***********");
+                        setMove(TicTacToeGame.PLAYER_2, move);
+                        validateWinner();
+                        mGameOver = false;
+                        myTurn = true;
+                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.w("Error", "loadPost:onCancelled", error.toException());
+            }
+        });
+    }
+    void validateWinner(){
+        int winner = mGame.checkForWinner();
+        if (winner == 0) {
+            if(myTurn){
+                mInfoTextView.setText("It's your turn.");
+            }
+            else{
+                mInfoTextView.setText("Waiting");
+            }
+        }
+        else if (winner == 1) {
+            mInfoTextView.setText("It's a tie!");
+            tieCount++;
+            mTieCount.setText("Tie: " + tieCount);
+            disableButtons();
+        }
+        else if (winner == 2) {
+            humanCount++;
+            mHumanCount.setText("Human: "+ humanCount);
+            mInfoTextView.setText("You won!");
+            disableButtons();
+        }
+        else{
+            androidCount++;
+            mAndroidCount.setText("Android: "+ androidCount);
+            mInfoTextView.setText("Android won!");
+            disableButtons();
+        }
+    }
+
     private boolean setMove(char player, int location) {
         if (mGame.setMove(player, location)) {
-            if (player == TicTacToeGame.HUMAN_PLAYER){
-                mHumanMediaPlayer.start();
-            }
-            if (player == TicTacToeGame.COMPUTER_PLAYER){
-                mHumanMediaPlayer.start();
-            }
+            String user = "";
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference players = database.getReference("Players");
+            HashMap<String, Object> update = new HashMap<>();
+            update.put("move",String.valueOf(location));
+            user = username;
+            players.child(user).updateChildren(update);
+            mHumanMediaPlayer.start();
             mBoardView.invalidate(); // Redraw the board
             return true;
         }
         return false;
     }
     private void disableButtons(){
-        mGameOver = !mGameOver;
+        mGameOver = true;
     }
+
 }

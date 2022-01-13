@@ -10,7 +10,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidTicTacToeTutorial2">
         <activity
+            android:name=".Lobby"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddPlayerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
